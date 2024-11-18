@@ -1,0 +1,199 @@
+To solve the questions using MySQL
+
+Part (a) - Insert Data into Tables
+Create the tables:
+sql
+Copy code
+CREATE TABLE employee (
+    employee_name VARCHAR(50) primary key,
+    street VARCHAR(50),
+    city VARCHAR(50)
+);
+
+CREATE TABLE works (
+    employee_name VARCHAR(50) primary key,
+    company_name VARCHAR(50),
+    salary INT
+);
+
+Insert the given data:
+sql
+Copy code
+INSERT INTO employee (employee_name, street, city) VALUES 
+('Arif', '51 upashahar', 'Rajshahi'),
+('Sumon', '52 east', 'Moynamati'),
+('Sagor', 'Neemgachhi', 'Sirajgong'),
+('Abdul', 'Binodpur', 'Rajshahi'),
+('Himesh', 'Nazrul avenue', 'Dhaka'),
+('Amirul', 'Chawk bazar', 'Sylhet'),
+('Sajib', '99 north', 'Chittagong');
+
+INSERT INTO works (employee_name, company_name, salary) VALUES 
+('Sumon', 'Agrani', 12000),
+('Abdul', 'Sonali', 13000),
+('Himesh', 'Agrani', 6000),
+('Sagor', 'Sonali', 8000),
+('Amirul', 'Sonali', 20000),
+('Arif', 'Janata', 13000),
+('Sajib', 'Janata', 9000);
+
+Part (b) - Query Solutions
+(b) Names of all employees who live in Rajshahi city:
+sql
+Copy code
+SELECT employee_name 
+FROM employee 
+WHERE city = 'Rajshahi';
+
+(c) Names and street addresses of all employees who live in Rajshahi city:
+sql
+Copy code
+SELECT employee_name, street 
+FROM employee 
+WHERE city = 'Rajshahi';
+
+(d) Names of all employees who work for (i) Sonali, (ii) Agrani, (iii) Janata:
+sql
+Copy code
+-- (i) Sonali
+SELECT employee_name 
+FROM works 
+WHERE company_name = 'Sonali';
+
+-- (ii) Agrani
+SELECT employee_name 
+FROM works 
+WHERE company_name = 'Agrani';
+
+-- (iii) Janata
+SELECT employee_name 
+FROM works 
+WHERE company_name = 'Janata';
+
+(e) Names and salary of all employees who work for (i) Sonali, (ii) Agrani, (iii) Janata:
+sql
+Copy code
+-- (i) Sonali
+SELECT employee_name, salary 
+FROM works 
+WHERE company_name = 'Sonali';
+
+-- (ii) Agrani
+SELECT employee_name, salary 
+FROM works 
+WHERE company_name = 'Agrani';
+
+-- (iii) Janata
+SELECT employee_name, salary 
+FROM works 
+WHERE company_name = 'Janata';
+
+(f) Names of all employees whose salary is (i) 12000, (ii) >=12000, (iii) <12000:
+sql
+Copy code
+-- (i) Salary = 12000
+SELECT employee_name 
+FROM works 
+WHERE salary = 12000;
+
+-- (ii) Salary >= 12000
+SELECT employee_name 
+FROM works 
+WHERE salary >= 12000;
+
+-- (iii) Salary < 12000
+SELECT employee_name 
+FROM works 
+WHERE salary < 12000;
+
+(g) Names and company of all employees whose salary is (i) 12000, (ii) >=12000, (iii) <12000:
+sql
+Copy code
+-- (i) Salary = 12000
+SELECT employee_name, company_name 
+FROM works 
+WHERE salary = 12000;
+
+-- (ii) Salary >= 12000
+SELECT employee_name, company_name 
+FROM works 
+WHERE salary >= 12000;
+
+-- (iii) Salary < 12000
+SELECT employee_name, company_name 
+FROM works 
+WHERE salary < 12000;
+
+(h) Names, streets, and cities of all employees who work for Agrani:
+sql
+Copy code
+SELECT e.employee_name, e.street, e.city 
+FROM employee e
+JOIN works w ON e.employee_name = w.employee_name 
+WHERE w.company_name = 'Agrani';
+
+(i) Names, streets, and cities of all employees who earn >=10000:
+sql
+Copy code
+SELECT e.employee_name, e.street, e.city 
+FROM employee e
+JOIN works w ON e.employee_name = w.employee_name 
+WHERE w.salary >= 10000;
+
+(j) Names, company, and salary of all employees who live in Rajshahi city:
+sql
+Copy code
+SELECT e.employee_name, w.company_name, w.salary 
+FROM employee e
+JOIN works w ON e.employee_name = w.employee_name 
+WHERE e.city = 'Rajshahi';
+
+(k) Names, streets, cities, and companies of all employees who earn >=10000:
+sql
+Copy code
+SELECT e.employee_name, e.street, e.city, w.company_name 
+FROM employee e
+JOIN works w ON e.employee_name = w.employee_name 
+WHERE w.salary >= 10000;
+
+(l) Names, streets, and cities of all employees who work for Sonali and earn more than 12000:
+sql
+Copy code
+SELECT e.employee_name, e.street, e.city 
+FROM employee e
+JOIN works w ON e.employee_name = w.employee_name 
+WHERE w.company_name = 'Sonali' AND w.salary > 12000;
+
+(m) Find all employees in the database who do not work for Sonali Bank:
+sql
+Copy code
+SELECT e.employee_name 
+FROM employee e
+JOIN works w ON e.employee_name = w.employee_name 
+WHERE w.company_name <> 'Sonali';
+
+(n) Modify the database so that “Arif” now lives in Natore:
+sql
+Copy code
+UPDATE employee 
+SET city = 'Natore' 
+WHERE employee_name = 'Arif';
+
+(o) Give all employees of “Agrani” Bank a 10 percent salary raise:
+sql
+Copy code
+UPDATE works 
+SET salary = salary * 1.10 
+WHERE company_name = 'Agrani';
+
+(p) Delete all records for Sagor in the employee table:
+sql
+Copy code
+DELETE FROM employee 
+WHERE employee_name = 'Sagor';
+
+(q) Add a column "manager" in the company table (assuming a company table is created):
+sql
+Copy code
+ALTER TABLE works 
+ADD manager VARCHAR(50);
