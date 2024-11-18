@@ -197,3 +197,11 @@ sql
 Copy code
 ALTER TABLE works 
 ADD manager VARCHAR(50);
+
+note:
+e means employee table we use e alternetive employee
+w means works table we use w alternative works
+again we use table_name.varialbe_name(field name)
+example 
+select employee.employee_name, employee.street
+select works.employeee_name, works.salary
