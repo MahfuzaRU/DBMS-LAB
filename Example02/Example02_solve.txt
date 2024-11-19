@@ -127,34 +127,35 @@ WHERE salary < 12000;
 (h) Names, streets, and cities of all employees who work for Agrani:
 sql
 Copy code
-SELECT e.employee_name, e.street, e.city 
-FROM employee e
-JOIN works w ON e.employee_name = w.employee_name 
-WHERE w.company_name = 'Agrani';
+SELECT employee.employee_name, employee.street, employee.city
+FROM employee 
+JOIN works ON employee.employee_name = works.employee_name 
+WHERE company_name = 'Agrani';
 
 (i) Names, streets, and cities of all employees who earn >=10000:
 sql
 Copy code
-SELECT e.employee_name, e.street, e.city 
-FROM employee e
-JOIN works w ON e.employee_name = w.employee_name 
-WHERE w.salary >= 10000;
+SELECT employee.employee_name, employee.street, employee.city
+FROM employee 
+JOIN works ON employee.employee_name = works.employee_name 
+WHERE salary >= 10000;
+
 
 (j) Names, company, and salary of all employees who live in Rajshahi city:
 sql
 Copy code
-SELECT e.employee_name, w.company_name, w.salary 
-FROM employee e
-JOIN works w ON e.employee_name = w.employee_name 
-WHERE e.city = 'Rajshahi';
+SELECT works.employee_name, works.company_name, works.salary
+FROM works
+JOIN employee ON employee.employee_name = works.employee_name 
+WHERE employee.city = 'Rajshahi';
 
 (k) Names, streets, cities, and companies of all employees who earn >=10000:
 sql
 Copy code
-SELECT e.employee_name, e.street, e.city, w.company_name 
-FROM employee e
-JOIN works w ON e.employee_name = w.employee_name 
-WHERE w.salary >= 10000;
+SELECT employee.employee_name, employee.street, employee.city, works.company_name 
+FROM employee 
+JOIN works ON employee.employee_name = works.employee_name 
+WHERE works.salary >= 10000;
 
 (l) Names, streets, and cities of all employees who work for Sonali and earn more than 12000:
 sql
