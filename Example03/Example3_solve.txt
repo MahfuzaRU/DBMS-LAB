@@ -1,0 +1,187 @@
+. Create Tables
+sql
+Copy code
+-- Create the 'person' table
+CREATE TABLE person (
+    nid VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(50),
+    address VARCHAR(50)
+);
+
+-- Create the 'car' table
+CREATE TABLE car (
+    license VARCHAR(10) PRIMARY KEY,
+    year INT,
+    model VARCHAR(50)
+);
+
+-- Create the 'accident' table
+CREATE TABLE accident (
+    date DATE,
+    driver VARCHAR(50),
+    damage_amount INT
+);
+
+-- Create the 'owns' table
+CREATE TABLE owns (
+    nid VARCHAR(10),
+    license VARCHAR(10),
+    PRIMARY KEY (nid, license),
+    FOREIGN KEY (nid) REFERENCES person(nid),
+    FOREIGN KEY (license) REFERENCES car(license)
+);
+
+-- Create the 'log' table
+CREATE TABLE log (
+    license VARCHAR(10),
+    date DATE,
+    driver VARCHAR(50),
+    PRIMARY KEY (license, date),
+    FOREIGN KEY (license) REFERENCES car(license)
+);
+2. Insert Data
+sql
+Copy code
+-- Insert data into 'person' table
+INSERT INTO person (nid, name, address) VALUES
+('123451', 'Arif', 'Rajshahi'),
+('123452', 'Sumon', 'Moynamati'),
+('123453', 'Sagor', 'Sirajgang'),
+('123454', 'Abdul', 'Rajshahi'),
+('123455', 'Himesh', 'Dhaka'),
+('123456', 'Amirul', 'Sylhet'),
+('123457', 'Sajib', 'Chittagang');
+
+-- Insert data into 'car' table
+INSERT INTO car (license, year, model) VALUES
+('12-3000', 2012, 'Axio'),
+('11-3000', 2008, 'Corolla'),
+('12-4000', 2013, 'Axio'),
+('12-5000', 2013, 'Premio'),
+('11-5000', 2010, 'Nano'),
+('11-6000', 2011, 'Alto'),
+('12-6000', 2015, 'Nano Twist');
+
+-- Insert data into 'accident' table
+INSERT INTO accident (date, driver, damage_amount) VALUES
+('2013-12-01', 'Arif', 10000),
+('2015-09-25', 'Komol', 12000),
+('2014-06-20', 'Bahadur', 11000),
+('2011-12-20', 'Abdul', 8000),
+('2015-09-19', 'Akter', 7000),
+('2013-05-15', 'Arif', 20000),
+('2014-08-20', 'Arif', 15000);
+
+-- Insert data into 'owns' table
+INSERT INTO owns (nid, license) VALUES
+('123451', '11-3000'),
+('123452', '12-4000'),
+('123453', '12-5000'),
+('123454', '11-5000'),
+('123455', '11-6000'),
+('123456', '12-6000'),
+('123457', '12-3000');
+
+-- Insert data into 'log' table
+INSERT INTO log (license, date, driver) VALUES
+('11-3000', '2013-12-01', 'Arif'),
+('12-4000', '2015-09-25', 'Komol'),
+('11-6000', '2014-06-20', 'Bahadur'),
+('11-5000', '2011-12-20', 'Abdul'),
+('12-6000', '2015-09-19', 'Akter'),
+('11-3000', '2013-05-15', 'Arif'),
+('11-3000', '2014-08-20', 'Arif');
+3. Solve Queries
+a) Find the names of all persons who live in Rajshahi.
+
+sql
+Copy code
+SELECT person.Name
+FROM person
+WHERE person.Address='Rajshahi';
+
+b) Which model was sold in 2013?
+
+sql
+Copy code
+SELECT car.Model
+FROM car
+WHERE car.Year=2013;
+
+c) Find the name of those drivers where damage amount is between 10000 and 15000.
+
+sql
+Copy code
+SELECT driver FROM accident WHERE damage_amount BETWEEN 10000 AND 15000;
+d) Find the national ID (nid) of those persons who own an Axio.
+
+sql
+Copy code
+SELECT p.nid 
+FROM person p
+JOIN owns o ON p.nid = o.nid
+JOIN car c ON o.license = c.license
+WHERE c.model = 'Axio';
+e) Find the name and address of those persons who own an Alto.
+
+sql
+Copy code
+SELECT p.name, p.address 
+FROM person p
+JOIN owns o ON p.nid = o.nid
+JOIN car c ON o.license = c.license
+WHERE c.model = 'Alto';
+f) Who (driver) was involved in the accident on 20/12/2011?
+
+sql
+Copy code
+SELECT driver FROM accident WHERE date = '2011-12-20';
+g) Who was the owner of the car with license 12-4000?
+
+sql
+Copy code
+SELECT p.name 
+FROM person p
+JOIN owns o ON p.nid = o.nid
+WHERE o.license = '12-4000';
+h) Who was the owner of the car whose driver is Arif?
+
+sql
+Copy code
+SELECT p.name 
+FROM person p
+JOIN owns o ON p.nid = o.nid
+JOIN log l ON o.license = l.license
+WHERE l.driver = 'Arif';
+i) Which car was involved in an accident on 19/09/2015?
+
+sql
+Copy code
+SELECT license 
+FROM log 
+WHERE date = '2015-09-19';
+j) Find the number of accidents in which the cars belonging to "Arif" were involved.
+
+sql
+Copy code
+SELECT COUNT(*) 
+FROM log l 
+JOIN owns o ON l.license = o.license
+JOIN person p ON o.nid = p.nid
+WHERE p.name = 'Arif';
+k) Find the dates of accidents in which the cars belonging to "Arif" were involved.
+
+sql
+Copy code
+SELECT l.date 
+FROM log l 
+JOIN owns o ON l.license = o.license
+JOIN person p ON o.nid = p.nid
+WHERE p.name = 'Arif';
+l) Modify the database so that “Arif” now lives in Natore.
+
+sql
+Copy code
+UPDATE person 
+SET address = 'Natore' 
+WHERE name = 'Arif';
