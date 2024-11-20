@@ -1,49 +1,38 @@
-. Create Tables
-sql
-Copy code
--- Create the 'person' table
+-- Create tables
 CREATE TABLE person (
     nid VARCHAR(10) PRIMARY KEY,
     name VARCHAR(50),
-    address VARCHAR(50)
+    address VARCHAR(100)
 );
 
--- Create the 'car' table
 CREATE TABLE car (
     license VARCHAR(10) PRIMARY KEY,
     year INT,
     model VARCHAR(50)
 );
 
--- Create the 'accident' table
 CREATE TABLE accident (
     date DATE,
     driver VARCHAR(50),
-    damage_amount INT
+    d_amount DECIMAL(10,2)
 );
 
--- Create the 'owns' table
 CREATE TABLE owns (
     nid VARCHAR(10),
     license VARCHAR(10),
-    PRIMARY KEY (nid, license),
     FOREIGN KEY (nid) REFERENCES person(nid),
     FOREIGN KEY (license) REFERENCES car(license)
 );
 
--- Create the 'log' table
 CREATE TABLE log (
     license VARCHAR(10),
     date DATE,
     driver VARCHAR(50),
-    PRIMARY KEY (license, date),
     FOREIGN KEY (license) REFERENCES car(license)
 );
-2. Insert Data
-sql
-Copy code
--- Insert data into 'person' table
-INSERT INTO person (nid, name, address) VALUES
+
+-- Insert data into person table
+INSERT INTO person VALUES
 ('123451', 'Arif', 'Rajshahi'),
 ('123452', 'Sumon', 'Moynamati'),
 ('123453', 'Sagor', 'Sirajgang'),
@@ -52,8 +41,8 @@ INSERT INTO person (nid, name, address) VALUES
 ('123456', 'Amirul', 'Sylhet'),
 ('123457', 'Sajib', 'Chittagang');
 
--- Insert data into 'car' table
-INSERT INTO car (license, year, model) VALUES
+-- Insert data into car table
+INSERT INTO car VALUES
 ('12-3000', 2012, 'Axio'),
 ('11-3000', 2008, 'Corolla'),
 ('12-4000', 2013, 'Axio'),
@@ -62,8 +51,8 @@ INSERT INTO car (license, year, model) VALUES
 ('11-6000', 2011, 'Alto'),
 ('12-6000', 2015, 'Nano Twist');
 
--- Insert data into 'accident' table
-INSERT INTO accident (date, driver, damage_amount) VALUES
+-- Insert data into accident table
+INSERT INTO accident VALUES
 ('2013-12-01', 'Arif', 10000),
 ('2015-09-25', 'Komol', 12000),
 ('2014-06-20', 'Bahadur', 11000),
@@ -72,8 +61,8 @@ INSERT INTO accident (date, driver, damage_amount) VALUES
 ('2013-05-15', 'Arif', 20000),
 ('2014-08-20', 'Arif', 15000);
 
--- Insert data into 'owns' table
-INSERT INTO owns (nid, license) VALUES
+-- Insert data into owns table
+INSERT INTO owns VALUES
 ('123451', '11-3000'),
 ('123452', '12-4000'),
 ('123453', '12-5000'),
@@ -82,8 +71,8 @@ INSERT INTO owns (nid, license) VALUES
 ('123456', '12-6000'),
 ('123457', '12-3000');
 
--- Insert data into 'log' table
-INSERT INTO log (license, date, driver) VALUES
+-- Insert data into log table
+INSERT INTO log VALUES
 ('11-3000', '2013-12-01', 'Arif'),
 ('12-4000', '2015-09-25', 'Komol'),
 ('11-6000', '2014-06-20', 'Bahadur'),
@@ -91,113 +80,83 @@ INSERT INTO log (license, date, driver) VALUES
 ('12-6000', '2015-09-19', 'Akter'),
 ('11-3000', '2013-05-15', 'Arif'),
 ('11-3000', '2014-08-20', 'Arif');
-3. Solve Queries
-a) Find the names of all persons who live in Rajshahi.
 
-sql
-Copy code
-SELECT person.Name
-FROM person
-WHERE person.Address='Rajshahi';
+-- Solutions to questions
 
-b) Which model was sold in 2013?
+-- b) Find the names of all persons who live in Rajshahi
+SELECT name FROM person WHERE address = 'Rajshahi';
 
-sql
-Copy code
-SELECT car.Model
-FROM car
-WHERE car.Year=2013;
+-- c) Which model was sold in 2013?
+SELECT DISTINCT model FROM car WHERE year = 2013;
 
-c) Find the name of those drivers where damage amount is between 10000 and 15000.
+-- d) Find the name of those drivers where damage amount is between 10000 and 15000
+SELECT DISTINCT driver FROM accident WHERE d_amount BETWEEN 10000 AND 15000;
 
-sql
-Copy code
-SELECT accident.Driver
-FROM accident
-WHERE accident.d_amount BETWEEN 10000 AND 15000;
+-- e) Find the national id (nid) of those persons who has Axio
+SELECT p.nid 
+FROM person p 
+JOIN owns o ON p.nid = o.nid 
+JOIN car c ON o.license = c.license 
+WHERE c.model = 'Axio';
 
-d) Find the national ID (nid) of those persons who own an Axio.
+-- f) Find the name and address of those persons who has Alto
+SELECT p.name, p.address 
+FROM person p 
+JOIN owns o ON p.nid = o.nid 
+JOIN car c ON o.license = c.license 
+WHERE c.model = 'Alto';
 
-sql
-SELECT person.Nid
-FROM person
-JOIN owns ON person.Nid = owns.Nid
-JOIN car ON owns.License = car.License
-WHERE car.Model = 'Axio';
+-- g) Who (driver) was involved in the accident by 2011-12-20?
+SELECT driver FROM accident WHERE date = '2011-12-20';
 
-
-e) Find the name and address of those persons who own an Alto.
-
-sql
-Copy code
-SELECT person.Name, person.Address
-FROM person
-JOIN owns on person.Nid=owns.Nid
-JOIN car on owns.License = car.License
-WHERE car.Model = 'Alto';
-
-f) Who (driver) was involved in the accident on 20/12/2011?
-
-sql
-Copy code
-SELECT accident.Driver
-FROM accident
-WHERE accident.Date = '2011-12-20';
-
-//SELECT driver FROM accident WHERE date = '2011-12-20';
-
-g) Who was the owner of the car with license 12-4000?
-
-sql
-Copy code
-SELECT person.Name
-FROM person
-JOIN owns on person.Nid=owns.Nid
-WHERE owns.License='12-4000';
-h) Who was the owner of the car whose driver is Arif?
-
-sql
-Copy code
-SELECT person.Name
-FROM person
-JOIN owns on person.Nid=owns.Nid
-JOIN log on owns.License=log.License
-WHERE log.Driver='Arif';
-
+-- h) Who was the owner of the car with license 12-4000?
 SELECT p.name 
-FROM person p
-JOIN owns o ON p.nid = o.nid
-JOIN log l ON o.license = l.license
+FROM person p 
+JOIN owns o ON p.nid = o.nid 
+WHERE o.license = '12-4000';
+
+-- i) Who was the owner of the car whose driver is Arif?
+SELECT DISTINCT p.name 
+FROM person p 
+JOIN owns o ON p.nid = o.nid 
+JOIN log l ON o.license = l.license 
 WHERE l.driver = 'Arif';
-i) Which car was involved in an accident on 19/09/2015?
 
-sql
-Copy code
-SELECT license 
-FROM log 
-WHERE date = '2015-09-19';
-j) Find the number of accidents in which the cars belonging to "Arif" were involved.
+-- j) Which car was involved in accident by 2015-09-19?
+SELECT c.model 
+FROM car c 
+JOIN log l ON c.license = l.license 
+WHERE l.date = '2015-09-19';
 
-sql
-Copy code
-SELECT COUNT(*) 
-FROM log l 
-JOIN owns o ON l.license = o.license
-JOIN person p ON o.nid = p.nid
+-- k) Find the number of accidents in which the cars belonging to "Arif" were involved
+SELECT COUNT(*) as accident_count 
+FROM accident a 
+JOIN log l ON a.date = l.date AND a.driver = l.driver 
+JOIN owns o ON l.license = o.license 
+JOIN person p ON o.nid = p.nid 
 WHERE p.name = 'Arif';
-k) Find the dates of accidents in which the cars belonging to "Arif" were involved.
 
-sql
-Copy code
-SELECT l.date 
-FROM log l 
-JOIN owns o ON l.license = o.license
-JOIN person p ON o.nid = p.nid
+-- l) Find the dates of accidents in which the cars belonging to "Arif" were involved
+SELECT a.date 
+FROM accident a 
+JOIN log l ON a.date = l.date AND a.driver = l.driver 
+JOIN owns o ON l.license = o.license 
+JOIN person p ON o.nid = p.nid 
 WHERE p.name = 'Arif';
-l) Modify the database so that “Arif” now lives in Natore.
 
-sql
-Copy code
-UPDATE person 
-SET address = 'Natore' 
-WHERE name = 'Arif';
+-- m) Modify the database so that "Arif" now lives in Natore
+UPDATE person SET address = 'Natore' WHERE name = 'Arif';
+
+result:
+b) People living in Rajshahi: Arif and Abdul
+c) Models sold in 2013: Axio and Premio
+d) Drivers with damage amount between 10000-15000: Arif, Komol, and Bahadur
+e) NIDs of people who have Axio: 123451 and 123452
+f) Person with Alto: Himesh lives in Dhaka
+g) Driver involved in accident on 2011-12-20: Abdul
+h) Owner of car license 12-4000: Sumon
+i) Owner of car driven by Arif: The car is owned by the person with NID 123451
+j) Car involved in accident on 2015-09-19: Nano Twist (license 12-6000)
+k) Number of accidents involving Arif's cars: This query counts accidents where Arif was either the driver or the owner
+l) Dates of accidents involving Arif's cars: This shows all dates where Arif was either the driver or the owner of the involved car
+m) Updated Arif's address to Natore
