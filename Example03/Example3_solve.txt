@@ -112,42 +112,58 @@ c) Find the name of those drivers where damage amount is between 10000 and 15000
 
 sql
 Copy code
-SELECT driver FROM accident WHERE damage_amount BETWEEN 10000 AND 15000;
+SELECT accident.Driver
+FROM accident
+WHERE accident.d_amount BETWEEN 10000 AND 15000;
+
 d) Find the national ID (nid) of those persons who own an Axio.
 
 sql
-Copy code
-SELECT p.nid 
-FROM person p
-JOIN owns o ON p.nid = o.nid
-JOIN car c ON o.license = c.license
-WHERE c.model = 'Axio';
+SELECT person.Nid
+FROM person
+JOIN owns ON person.Nid = owns.Nid
+JOIN car ON owns.License = car.License
+WHERE car.Model = 'Axio';
+
+
 e) Find the name and address of those persons who own an Alto.
 
 sql
 Copy code
-SELECT p.name, p.address 
-FROM person p
-JOIN owns o ON p.nid = o.nid
-JOIN car c ON o.license = c.license
-WHERE c.model = 'Alto';
+SELECT person.Name, person.Address
+FROM person
+JOIN owns on person.Nid=owns.Nid
+JOIN car on owns.License = car.License
+WHERE car.Model = 'Alto';
+
 f) Who (driver) was involved in the accident on 20/12/2011?
 
 sql
 Copy code
-SELECT driver FROM accident WHERE date = '2011-12-20';
+SELECT accident.Driver
+FROM accident
+WHERE accident.Date = '2011-12-20';
+
+//SELECT driver FROM accident WHERE date = '2011-12-20';
+
 g) Who was the owner of the car with license 12-4000?
 
 sql
 Copy code
-SELECT p.name 
-FROM person p
-JOIN owns o ON p.nid = o.nid
-WHERE o.license = '12-4000';
+SELECT person.Name
+FROM person
+JOIN owns on person.Nid=owns.Nid
+WHERE owns.License='12-4000';
 h) Who was the owner of the car whose driver is Arif?
 
 sql
 Copy code
+SELECT person.Name
+FROM person
+JOIN owns on person.Nid=owns.Nid
+JOIN log on owns.License=log.License
+WHERE log.Driver='Arif';
+
 SELECT p.name 
 FROM person p
 JOIN owns o ON p.nid = o.nid
