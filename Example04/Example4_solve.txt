@@ -1,0 +1,255 @@
+-- Create tables
+CREATE TABLE employee
+(
+    employee_name VARCHAR(20) PRIMARY KEY,
+    street VARCHAR(20),
+    city VARCHAR(20)
+);
+
+CREATE TABLE company
+(
+    company_name VARCHAR(20) PRIMARY KEY,
+    city VARCHAR(20)
+);
+
+CREATE TABLE works
+(
+    employee_name VARCHAR(20) PRIMARY KEY,
+    company_name VARCHAR(20),
+    salary int
+);
+
+CREATE TABLE manages
+(
+    employee_name VARCHAR(20) PRIMARY KEY,
+    manager_name VARCHAR(20)
+);
+
+-- Insert data into employee table
+INSERT INTO employee VALUES
+('Arif', '51 upashahar', 'Rajshahi'),
+('Sumon', '52 east', 'Moynamati'),
+('Sagor', 'Neemgachhi', 'Sirajgong'),
+('Abdul', 'Binodpur', 'Rajshahi'),
+('Himesh', 'Nazrul avenue', 'Dhaka'),
+('Amirul', 'Chawk bazar', 'Sylhet'),
+('Sajib', '99 north', 'Chittagong');
+
+-- Insert data into company table
+INSERT INTO company VALUES
+('Agrani', 'Rajshahi'),
+('Sonali', 'Sylhet'),
+('Janata', 'Dhaka');
+
+-- Insert data into works table
+INSERT INTO works VALUES
+('Sumon', 'Agrani', 12000),
+('Abdul', 'Sonali', 13000),
+('Himesh', 'Agrani', 6000),
+('Amirul', 'Sonali', 20000),
+('Sagor', 'Sonali', 8000),
+('Arif', 'Janata', 13000),
+('Sajib', 'Janata', 9000);
+
+-- Insert data into manages table
+INSERT INTO manages VALUES
+('Amirul', 'Amirul'),
+('Abdul', 'Amirul'),
+('Sagor', 'Amirul'),
+('Sumon', 'Sumon'),
+('Himesh', 'Sumon'),
+('Arif', 'Arif'),
+('Sajib', 'Arif');
+
+-- Solutions to questions
+
+-- 2. Find the names of all employees who work for "Sonali"
+SELECT works.employee_name
+FROM works
+WHERE works.company_name='Sonali';
+
+-- 3. Find the names, streets and cities residence of all employees who work for "Agrani"
+SELECT employee.employee_name, employee.street, employee.city
+FROM employee 
+JOIN works ON employee.employee_name=works.employee_name
+WHERE works.company_name='Agrani';;
+
+-- 4. Find the names, streets and cities residence of all employees who work for "Sonali" and earn more than 12,000
+SELECT employee.employee_name, employee.street, employee.city
+FROM employee 
+JOIN works ON employee.employee_name=works.employee_name
+WHERE works.company_name='Sonali' AND works.salary>10000;
+
+-- 5. Find all employees who live in the same cities as the companies for which they work
+SELECT employee.employee_name
+FROM employee
+JOIN works ON employee.employee_name=works.employee_name
+JOIN company ON works.company_name=company.company_name
+WHERE company.city=employee.city
+
+
+-- 6. Find all employees who live in the same cities and streets as their managers
+SELECT e.employee_name
+FROM employees e
+JOIN manages m ON e.employee_name=m.employee_name
+JOIN employees e1 ON m.manager_name=e1.employee_name
+WHERE e.city=e1.city AND e.street=e1.street;
+
+-- 7. Find all employees who do not work for "Sonali" Bank
+SELECT employees.employee_name
+FROM employees 
+JOIN works ON employees.employee_name=works.employee_name
+WHERE works.company_name!='Sonali';
+
+-- 8. Find all employees who earn more than each employee of "Janata" Bank
+SELECT works.employee_name 
+FROM works 
+WHERE works.salary > ALL (
+    SELECT salary 
+    FROM works 
+    WHERE company_name = 'Janata'
+);
+
+or,
+SELECT works.employee_name
+FROM works
+WHERE works.salary>13000;
+-- 9. Find all employees who earn more than the average salary of their companies
+SELECT w1.employee_name
+FROM works w1
+WHERE w1.salary > (
+    SELECT AVG(w2.salary)
+    FROM works w2
+    WHERE w2.company_name = w1.company_name
+);
+or
+SELECT works.employee_name 
+FROM works 
+WHERE works.salary > (
+    SELECT AVG(salary) 
+    FROM works w  
+    WHERE w.company_name = company_name
+);
+
+
+-- 10. Find the company that has the most employees
+SELECT company_name 
+FROM works 
+GROUP BY company_name 
+ORDER BY COUNT(employee_name) DESC 
+LIMIT 1;
+
+
+-- 11. Find the company that has the smallest payroll
+SELECT company_name, SUM(salary) as total_payroll 
+FROM works 
+GROUP BY company_name 
+ORDER BY total_payroll ASC 
+LIMIT 1;
+or
+SELECT company_name 
+FROM works 
+GROUP BY company_name 
+ORDER BY SUM(works.salary) ASC 
+LIMIT 1;
+
+
+-- 12. Find companies whose employees earn a higher salary, on average, than the average salary at "Agrani" Bank
+SELECT w1.company_name 
+FROM works w1 
+GROUP BY w1.company_name 
+HAVING AVG(w1.salary) > (
+    SELECT AVG(salary) 
+    FROM works 
+    WHERE company_name = 'Agrani'
+);
+
+-- 13. Modify the database so that "Arif" now lives in Natore
+UPDATE employee 
+SET city = 'Natore' 
+WHERE employee_name = 'Arif';
+
+-- 14. Give all employees of "Agrani" Bank a 10 percent raise
+UPDATE works 
+SET salary = salary * 1.1 
+WHERE company_name = 'Agrani';
+
+-- 15. Give all managers of "Agrani" Bank a 10 percent raise
+UPDATE works
+JOIN manages ON works.employee_name=manages.manager_name
+SET works.salary=works.salary*1.10
+WHERE works.company_name='Agrani';
+
+or
+UPDATE works 
+SET salary = salary * 1.10 
+WHERE employee_name IN (
+    SELECT manager_name 
+    FROM manages m
+    JOIN works w ON m.manager_name = w.employee_name
+    WHERE w.company_name = 'Agrani'
+);
+
+
+-- 16. Give all managers a conditional raise
+UPDATE works w 
+JOIN manages m ON w.employee_name = m.manager_name 
+SET w.salary = 
+    CASE 
+        WHEN w.salary * 1.1 > 19000 THEN w.salary * 1.03 
+        ELSE w.salary * 1.1 
+    END;
+or
+UPDATE works 
+SET salary = 
+    CASE 
+        WHEN salary > 19000 THEN salary * 1.03 
+        ELSE salary * 1.10 
+    END
+WHERE employee_name IN (
+    SELECT manager_name 
+    FROM manages
+);
+
+-- 17. Delete all tuples in the works relation for employees of "Janata" Bank
+DELETE FROM works 
+WHERE company_name = 'Janata';
+
+-- 18. Create view for manager-name and average salary
+CREATE VIEW manager_avg_salary AS 
+SELECT m.manager_name, AVG(w.salary) as avg_salary 
+FROM manages m 
+JOIN works w ON m.employee_name = w.employee_name 
+GROUP BY m.manager_name;
+
+
+.......
+
+
+Result:
+
+2. Employees working for Sonali: Abdul, Amirul, Sagor
+3. Agrani employees with details:
+
+Sumon (52 east, Moynamati)
+Himesh (Nazrul avenue, Dhaka)
+
+
+4. Sonali employees earning >12000:
+
+Amirul (Chawk bazar, Sylhet)
+Abdul (Binodpur, Rajshahi)
+
+
+5. Employees living in same city as their company: Those where employee city matches company city
+6. Employees living same place as managers: Those where employee address matches manager address
+7. Employees not working for Sonali: All except Abdul, Amirul, and Sagor
+8. Employees earning more than all Janata employees: Those with salary > 13000
+9. Employees earning above company average: Varies based on company averages
+10. Company with most employees: Counts number of employees per company
+11. Company with smallest payroll: Sum of salaries per company, showing lowest
+12. Companies with higher average salary than Agrani: Compares company averages
+
+13-17: These are modification queries that update or delete data
+
+18. The view creation shows average salary per manager but cannot be modified due to MySQL view restrictions.
