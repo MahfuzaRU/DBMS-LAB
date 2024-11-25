@@ -1,0 +1,222 @@
+
+CREATE TABLE book (
+    BookId VARCHAR(20) PRIMARY KEY,
+    Title VARCHAR(100),
+    PublisherName VARCHAR(100)
+);
+
+
+CREATE TABLE book_Author (
+    BookId VARCHAR(20),
+    AuthorName VARCHAR(50),
+    PRIMARY KEY(BookId, AuthorName),
+    FOREIGN KEY (BookId) REFERENCES book(BookId)
+);
+
+
+CREATE TABLE publisher (
+    Name VARCHAR(100) PRIMARY KEY,
+    Address VARCHAR(200),
+    Phone VARCHAR(20)
+);
+
+CREATE TABLE library_Branch (
+    BranchId INT PRIMARY KEY,
+    BranchName VARCHAR(100),
+    Address VARCHAR(200)
+);
+
+
+
+CREATE TABLE book_Copies (
+    BookId VARCHAR(20),
+    BranchId INT,
+    No_Of_Copies INT,
+    PRIMARY KEY(BookId, BranchId),
+    FOREIGN KEY (BookId) REFERENCES book(BookId),
+    FOREIGN KEY (BranchId) REFERENCES library_Branch(BranchId)
+    
+);
+
+
+CREATE TABLE borrower (
+    CardNo INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Address VARCHAR(200),
+    Phone VARCHAR(20)
+);
+
+
+CREATE TABLE Book_Loan (
+    BookId VARCHAR(20),
+    BranchId INT,
+    CardNo INT,
+    DateOut DATE,
+    DueDate DATE,
+    PRIMARY KEY(BookId, BranchId, CardNo),
+    FOREIGN KEY (BookId) REFERENCES book(BookId),
+    FOREIGN KEY (BranchId) REFERENCES library_Branch(BranchId),
+    FOREIGN KEY (CardNo) REFERENCES borrower(CardNo)
+    
+);
+
+insert data:
+
+INSERT INTO book 
+VALUES
+('100.001cn', 'Computer Network', 'PHI'),
+('100.002dsc', 'Database System', 'Tata'),
+('100.003ds', 'Digital System', 'PHI'),
+('100.004db', 'DBMS', 'PHI'),
+('100.005ora', 'Oracle 2000', 'Galgotia');
+
+INSERT INTO book_Author 
+VALUES
+('100.001cn', 'A S Tanenbaum'),
+('100.002dsc', 'Silberschatz'),
+('100.003ds', 'Ronald J Tocci'),
+('100.004db', 'Ivan Bayross'),
+('100.005ora', 'Ivan Bayross');
+
+INSERT INTO publisher 
+VALUES
+('PHI', '20 Delhi Super Market', '01715-454678'),
+('Tata', 'North Kolkata', '0156-2345445'),
+('Galgotia', 'Mumbai', '0192-203490');
+
+INSERT INTO library_Branch 
+VALUES
+(1001, 'CSE Seminar Library', 'Rajshahi'),
+(1002, 'RU Central Library', 'Rajshahi'),
+(1003, 'DU Central Library', 'Dhaka');
+
+
+INSERT INTO book_Copies 
+VALUES
+('100.001cn', 1001, 2),
+('100.001cn', 1002, 5),
+('100.002dsc', 1001, 3),
+('100.002dsc', 1002, 4),
+('100.003ds', 1001, 3),
+('100.003ds', 1003, 5),
+('100.004db', 1001, 2),
+('100.004db', 1002, 5),
+('100.005ora', 1001, 2),
+('100.005ora', 1002, 7);
+
+INSERT INTO borrower
+ VALUES
+(10001, 'Saidur', 'CSE', '01714-400567'),
+(10002, 'Rafiq', 'PHYSICS', '0194-300456'),
+(10003, 'Masud', 'CSE', '0156-345678'),
+(10004, 'Nobir', 'ICT', '01199-203456');
+
+INSERT INTO book_Loan 
+VALUES
+('100.001cn', 1001, 10001, '2015-01-15', '2015-02-15'),
+('100.001cn', 1002, 10002, '2015-01-25', '2015-02-25'),
+('100.002dsc', 1001, 10003, '2015-02-20', '2015-03-20'),
+('100.002dsc', 1002, 10004, '2015-03-15', '2015-04-15'),
+('100.003ds', 1001, 10001, '2015-06-07', '2015-07-07'),
+('100.003ds', 1003, 10002, '2015-10-15', '2015-11-15'),
+('100.004db', 1001, 10003, '2015-10-25', '2015-11-25'),
+('100.004db', 1002, 10004, '2015-11-15', '2015-12-15'),
+('100.005ora', 1001, 10003, '2015-12-22', '2016-01-22'),
+('100.005ora', 1002, 10001, '2015-12-25', '2016-01-25');
+
+
+
+1.
+
+SELECT SUM(book_copies.No_Of_Copies)
+FROM book_copies
+JOIN book on book.BookId = book_copies.BookId
+JOIN library_branch ON library_branch.BranchId = book_copies.BranchId
+WHERE book.Title='DBMS' AND library_branch.BranchName='CSE Seminar Library';
+
+2.
+//again 1, ans=2,
+SELECT SUM(book_copies.No_Of_Copies)
+FROM book_copies
+JOIN book on book.BookId = book_copies.BookId
+JOIN library_branch ON library_branch.BranchId = book_copies.BranchId
+WHERE book.Title='DBMS' AND library_branch.BranchName='RU Central Library';
+//RU ans=5,
+SELECT SUM(book_copies.No_Of_Copies)
+FROM book_copies
+JOIN book on book.BookId = book_copies.BookId
+JOIN library_branch ON library_branch.BranchId = book_copies.BranchId
+WHERE book.Title='DBMS' AND library_branch.BranchName='DU Central Library';
+//Du ans=null
+
+
+or 
+
+SELECT library_branch.BranchName, SUM(book_copies.No_Of_Copies) AS Total_Copies
+FROM book_copies
+JOIN book ON book.BookId = book_copies.BookId
+JOIN library_branch ON library_branch.BranchId = book_copies.BranchId
+WHERE book.Title='DBMS' GROUP BY library_branch.BranchName;
+
+ans, 2, 5,
+
+
+3.
+not sure
+SELECT borrower.Name
+FROM borrower
+LEFT JOIN book_loan ON book_loan.CardNo = borrower.CardNo
+WHERE book_loan.CardNo IS NULL;
+
+
+4.
+
+SELECT BOOK.Title, BORROWER.Name, BORROWER.Address
+FROM BOOK_LOAN
+INNER JOIN BOOK ON BOOK_LOAN.BookId = BOOK.BookId
+INNER JOIN BORROWER ON BOOK_LOAN.CardNo = BORROWER.CardNo
+INNER JOIN LIBRARY_BRANCH ON BOOK_LOAN.BranchId = LIBRARY_BRANCH.BranchId
+WHERE LIBRARY_BRANCH.BranchName = 'CSE Seminar library' AND BOOK_LOAN.DueDate = CURDATE();
+
+
+5.
+
+SELECT LIBRARY_BRANCH.BranchName, COUNT(*) AS Total_Loans
+FROM BOOK_LOAN
+INNER JOIN LIBRARY_BRANCH ON BOOK_LOAN.BranchId = LIBRARY_BRANCH.BranchId
+GROUP BY LIBRARY_BRANCH.BranchName;
+
+//out:
+BranchName             ->  Total_Loans
+CSE Seminar Library          5
+RU Seminar Library  	     1
+DU Seminar Library 	     4
+
+6.
+SELECT BORROWER.Name, BORROWER.Address, COUNT(*) AS Books_Checked_Out
+FROM BOOK_LOAN
+INNER JOIN BORROWER ON BOOK_LOAN.CardNo = BORROWER.CardNo
+GROUP BY BORROWER.CardNo, BORROWER.Name, BORROWER.Address
+HAVING COUNT(*) > 2;
+
+//out:
+name -> address -> books_checked_out
+saidur -> CSE -> 3
+Masud -> CSE  -> 3 
+
+
+7.
+
+SELECT BOOK.Title, SUM(BOOK_COPIES.No_Of_Copies) AS Total_Copies
+FROM BOOK
+INNER JOIN BOOK_AUTHOR ON BOOK.BookId = BOOK_AUTHOR.BookId
+INNER JOIN BOOK_COPIES ON BOOK.BookId = BOOK_COPIES.BookId
+INNER JOIN LIBRARY_BRANCH ON BOOK_COPIES.BranchId = LIBRARY_BRANCH.BranchId
+WHERE BOOK_AUTHOR.AuthorName = 'Ivan Bayross' AND LIBRARY_BRANCH.BranchName = 'RU central library'
+GROUP BY BOOK.Title;
+
+//out:
+
+title 		total_copies
+DBMS		5
+Oracle 2000	7
