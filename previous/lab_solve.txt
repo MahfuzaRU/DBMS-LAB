@@ -1,0 +1,81 @@
+1.
+a,b)
+
+CREATE TABLE Table1 (
+    Roll INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Department VARCHAR(10),
+    Balance DECIMAL(10, 2),
+    Grade CHAR(2)
+);
+
+INSERT INTO Table1 (Roll, Name, Department, Balance, Grade)
+VALUES 
+    (10101, 'Karim', 'CSE', 220.25, 'F'),
+    (10201, 'Rahim', 'ICE', 340.70, 'B+'),
+    (10301, 'Badol', 'EEE', 360.00, 'B-'),
+    (10401, 'Sohel', 'ICE', 560.16, 'F'),
+    (10102, 'Rina', 'CSE', 255.98, 'B');
+
+
+c)
+RENAME TABLE table1 to faculty;
+
+d)
+
+SELECT faculty.Name, faculty.Roll 
+FROM faculty
+WHERE faculty.Name LIKE 'S%';
+
+e)
+SELECT faculty.Name, faculty.Roll 
+FROM faculty
+WHERE faculty.Balance <300;
+
+
+
+
+2.
+a)
+CREATE TABLE cse
+(Roll int PRIMARY KEY,
+ Home_District varchar(20)
+);
+
+b)
+INSERT INTO CSE 
+VALUES 
+    (10101, 'Rajshahi'),
+    (10102, 'Khulna'),
+    (10201, 'Dhaka'),
+    (10301, 'Rajshahi'),
+    (10401, 'Bogra');
+
+c)
+
+SELECT faculty.Roll, cse.Home_District
+FROM faculty
+JOIN cse ON cse.Roll=faculty.Roll
+WHERE faculty.Department='CSE';
+
+3.
+
+CREATE TABLE Passed (
+    Roll INT PRIMARY KEY,
+    Name VARCHAR(50)
+);
+
+DELIMITER $$
+
+CREATE TRIGGER InsertIntoPassed
+AFTER INSERT ON Faculty
+FOR EACH ROW
+BEGIN
+    IF NEW.Grade != 'F' THEN
+        INSERT INTO Passed (Roll, Name)
+        VALUES (NEW.Roll, NEW.Name);
+    END IF;
+END;
+$$
+
+DELIMITER ;
