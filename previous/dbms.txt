@@ -1,0 +1,177 @@
+SELECT - extracts data from a database
+UPDATE - updates data in a database
+DELETE - deletes data from a database
+INSERT INTO - inserts new data into a database
+CREATE DATABASE - creates a new database
+ALTER DATABASE - modifies a database
+CREATE TABLE - creates a new table
+ALTER TABLE - modifies a table
+DROP TABLE - deletes a table
+CREATE INDEX - creates an index (search key)
+DROP INDEX - deletes an index
+
+SELECT DISTINCT Country FROM Customers;  //for no repeate
+
+WHERE condition1 AND condition2 AND condition3 ...;
+WHERE condition1 OR condition2 OR condition3 ...;
+WHERE NOT condition;
+
+ORDER BY keyword is used to sort the result-set in ascending or descending order.
+ORDER BY column-name;
+
+INSERT INTO table_name
+VALUES (value1, value2, value3, ...);
+
+SELECT column_names
+FROM table_name
+WHERE column_name IS NULL;
+
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+
+DELETE FROM Customers   //table_name
+WHERE CustomerName='Alfreds Futterkiste';
+
+SELECT COUNT(column_name)    //COUNT // AVG // SUM
+FROM table_name
+WHERE condition;
+
+The LIKE operator is used in a WHERE clause to search for a specified pattern in a column.
+
+The percent sign (%) represents zero, one, or multiple characters
+The underscore sign (_) represents one, single character
+WHERE CustomerName LIKE 'a%'	Finds any values that start with "a"
+WHERE CustomerName LIKE '%a'	Finds any values that end with "a"
+WHERE CustomerName LIKE '%or%'	Finds any values that have "or" in any position
+WHERE CustomerName LIKE '_r%'	Finds any values that have "r" in the second position
+WHERE CustomerName LIKE 'a_%'	Finds any values that start with "a" and are at least 2 characters in length
+WHERE CustomerName LIKE 'a__%'	Finds any values that start with "a" and are at least 3 characters in length
+WHERE ContactName LIKE 'a%o'	Finds any values that start with "a" and ends with "o"
+
+
+SELECT * FROM Products
+WHERE Price BETWEEN 10 AND 20;
+
+MySQL Aliases
+Aliases are used to give a table, or a column in a table, a temporary name.
+
+Aliases are often used to make column names more readable.
+
+An alias only exists for the duration of that query.
+
+An alias is created with the AS keyword.
+
+SELECT CustomerID AS ID, CustomerName AS Customer // 2 column name are temporary changed and new name id, customer
+FROM Customers;
+
+SELECT column_name(s)
+FROM table1
+INNER JOIN table2 ON table1.column_name = table2.column_name;  // used just join
+
+The GROUP BY statement is often used with aggregate functions (COUNT(), MAX(), MIN(), SUM(), AVG()) to group the result-set by one or more columns
+SELECT column_name(s)
+FROM table_name
+WHERE condition
+GROUP BY column_name(s)
+ORDER BY column_name(s);
+
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country;
+
+CREATE DATABASE databasename;
+DROP DATABASE databasename;
+DROP TABLE table_name;
+
+The ALTER TABLE statement is used to add, delete, or modify columns in an existing table.
+ALTER TABLE Persons
+ADD DateOfBirth date;   //ADD column_name datatype;
+ALTER TABLE Persons
+DROP COLUMN DateOfBirth; //table er coloumn delete hoy
+
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+);
+
+MySQL CHECK Constraint
+The CHECK constraint is used to limit the value range that can be placed in a column.
+
+If you define a CHECK constraint on a column it will allow only certain values for this column.
+
+If you define a CHECK constraint on a table it can limit the values in certain columns based on values in other columns in the row.
+
+The following SQL creates a CHECK constraint on the "Age" column when the "Persons" table is created. The CHECK constraint ensures that the age of a person must be 18, or older:
+CREATE TABLE Persons (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int,
+    CHECK (Age>=18)
+);
+
+MySQL Date Data Types
+DATE - format YYYY-MM-DD
+DATETIME - format: YYYY-MM-DD HH:MI:SS
+TIMESTAMP - format: YYYY-MM-DD HH:MI:SS
+YEAR - format YYYY or YY
+
+
+TRIGGER
+triggers are of two types according to the SQL standard: row-level triggers and statement-level triggers.
+
+ It is a special type of stored procedure that is invoked automatically in response to an event. Each trigger is associated with a table, which is activated on any DML statement such as INSERT, UPDATE, or DELETE.
+
+Row-Level Trigger: It is a trigger, which is activated for each row by a triggering statement such as insert, update, or delete. For example, if a table has inserted, updated, or deleted multiple rows, the row trigger is fired automatically for each row affected by the insert, update, or delete statement.
+
+Statement-Level Trigger: It is a trigger, which is fired once for each event that occurs on a table regardless of how many rows are inserted, updated, or deleted.
+
+Why we need/use triggers in MySQL?
+We need/use triggers in MySQL due to the following features:
+
+Triggers help us to enforce business rules.
+Triggers help us to validate data even before they are inserted or updated.
+Triggers help us to keep a log of records like maintaining audit trails in tables.
+SQL triggers provide an alternative way to check the integrity of data.
+Triggers provide an alternative way to run the scheduled task.
+Triggers increases the performance of SQL queries because it does not need to compile each time the query is executed.
+Triggers reduce the client-side code that saves time and effort.
+Triggers help us to scale our application across different platforms.
+Triggers are easy to maintain.
+
+(BEFOR | AFTER) table_name (INSERT | UPDATE | DELETE)  
+
+Trigger Activation Time: BEFORE | AFTER
+
+Trigger Event: INSERT | UPDATE | DELETE
+CREATE TRIGGER trigger_name    
+    (AFTER | BEFORE) (INSERT | UPDATE | DELETE)  
+         ON table_name FOR EACH ROW    
+         BEGIN    
+        --variable declarations    
+        --trigger code    
+        END;    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
